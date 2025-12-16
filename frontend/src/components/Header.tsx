@@ -1,7 +1,8 @@
-import { Book, Calendar, ChevronDown, House, Trophy, Users, type LucideProps } from "lucide-react";
-import { Link } from "react-router";
+import { ChevronDown, House, Send, Trophy, type LucideProps } from "lucide-react";
+import { Link, useLocation } from "react-router";
 
 const Header = () => {
+    const location = useLocation();
     return (
         <header className="sticky top-0 z-50 border-b border-gray-100 bg-white/80 px-6 py-2 shadow-sm backdrop-blur-md">
             <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -13,19 +14,28 @@ const Header = () => {
                     <nav>
                         <ul className="flex items-center gap-1">
                             <li>
-                                <NavLink url="/" name="Trang chủ" Icon={House} active />
+                                <NavLink
+                                    url="/"
+                                    name="Trang chủ"
+                                    Icon={House}
+                                    active={isActive(location.pathname, "/")}
+                                />
                             </li>
-                            <li>
-                                <NavLink url="#" name="Timeline" Icon={Calendar} />
+                            <li id="scoreboard">
+                                <NavLink
+                                    url="/scoreboard"
+                                    name="Bảng điểm"
+                                    Icon={Trophy}
+                                    active={isActive(location.pathname, "/scoreboard")}
+                                />
                             </li>
-                            <li>
-                                <NavLink url="#" name="Đề tài" Icon={Book} />
-                            </li>
-                            <li>
-                                <NavLink url="#" name="Nhóm" Icon={Users} />
-                            </li>
-                            <li>
-                                <NavLink url="#" name="Bảng điểm" Icon={Trophy} />
+                            <li id="submissions">
+                                <NavLink
+                                    url="/submissions"
+                                    name="Nộp đề tài"
+                                    Icon={Send}
+                                    active={isActive(location.pathname, "/submissions")}
+                                />
                             </li>
                         </ul>
                     </nav>
@@ -43,7 +53,9 @@ const Header = () => {
         </header>
     );
 };
-
+const isActive = (src: string, dest: string) => {
+    return src === dest;
+};
 const NavLink = ({
     url,
     name,

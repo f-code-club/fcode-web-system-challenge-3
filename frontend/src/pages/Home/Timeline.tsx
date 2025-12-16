@@ -1,4 +1,5 @@
-import { ArrowDownRight, Calendar, CornerUpRight } from "lucide-react";
+import { ArrowDownRight } from "lucide-react";
+import { Badge } from "~/components/ui/badge";
 
 const Timeline = () => {
     const timelineData = [
@@ -23,9 +24,9 @@ const Timeline = () => {
             description: "Ngày present chính thức.",
         },
     ];
-
+    const indexActive = 0;
     return (
-        <section className="col-span-12">
+        <section className="col-span-12" id="timeline">
             <div className="overflow-hidden rounded-lg border border-gray-100 bg-white shadow-xs">
                 <div className="border-b border-gray-200 bg-gradient-to-r from-gray-100 to-white px-6 py-4">
                     <h2 className="text-lg font-semibold text-gray-900">Timeline</h2>
@@ -33,15 +34,14 @@ const Timeline = () => {
                 </div>
                 <div className="px-6 py-6">
                     <div className="relative space-y-6">
-                        {/* Vertical line */}
                         <div className="bg-primary/20 absolute top-3 bottom-3 left-[15px] w-0.5" />
 
                         {timelineData.map((item, index) => (
                             <div key={index} className="relative flex gap-4">
-                                <Dot number={index + 1} active={index === 0} />
+                                <Dot number={index + 1} active={index === indexActive} />
 
                                 {/* Content */}
-                                <Content {...item} active={index === 0} />
+                                <Content {...item} active={index === indexActive} />
                             </div>
                         ))}
                     </div>
@@ -53,10 +53,20 @@ const Timeline = () => {
 const Dot = ({ number, active = false }: { number: number; active?: boolean }) => (
     <div className="relative flex-shrink-0">
         {active && <ArrowDownRight className="text-primary size-10 -translate-x-5 rotate-10 font-bold" />}
-        <div
-            className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white shadow-sm ${active ? "bg-primary" : "bg-gray-200"}`}
-        >
-            {number}
+        <div className="relative flex flex-col justify-center">
+            <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white shadow-sm ${active ? "bg-primary" : "bg-gray-200"}`}
+            >
+                {number}
+            </div>
+            {active && (
+                <Badge
+                    variant="default"
+                    className="absolute top-8 -left-4 mt-2 bg-yellow-500 text-white dark:bg-yellow-600"
+                >
+                    Đang diễn ra
+                </Badge>
+            )}
         </div>
     </div>
 );
@@ -73,7 +83,7 @@ const Content = ({
 }) => (
     <div className="flex-1 pb-2">
         <div className={`bg-primary/5 rounded-lg border border-none p-4 ${active ? "" : "opacity-50"}`}>
-            <div className="mb-2 flex items-center gap-2">
+            <div className="flex items-center gap-2">
                 <span className="bg-primary/10 text-primary rounded-md px-2.5 py-1 text-xs font-semibold">
                     {startDate}
                 </span>

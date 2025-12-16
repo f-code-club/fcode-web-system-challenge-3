@@ -2,7 +2,7 @@ import { Facebook, Mail, Phone } from "lucide-react";
 
 const Mentor = () => {
     return (
-        <section className="col-span-4">
+        <section className="col-span-4" id="mentor">
             <div className="sticky top-24 rounded-lg border border-gray-200 bg-white shadow-xs">
                 <div className="border-b border-gray-100 bg-gradient-to-br from-gray-50 to-white px-6 py-5">
                     <div className="flex items-center gap-3">

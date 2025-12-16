@@ -1,7 +1,7 @@
 import { Facebook } from "lucide-react";
 const Members = () => {
     return (
-        <section className="col-span-8">
+        <section className="col-span-8" id="members">
             <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-xs">
                 <div className="border-b border-gray-200 bg-gradient-to-r from-gray-100 px-6 py-4">
                     <h2 className="text-lg font-semibold text-gray-900">

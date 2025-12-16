@@ -5,7 +5,7 @@ export function ShowTopic() {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="secondary" className="bg-primary hover:bg-primary/90 mx-auto text-white">
+                <Button variant="secondary" className="bg-primary hover:bg-primary/90 mx-auto text-white" id="topic">
                     Xem đề tài của nhóm
                 </Button>
             </DialogTrigger>
