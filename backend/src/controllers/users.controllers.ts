@@ -1,0 +1,52 @@
+import { NextFunction, ParamsDictionary } from "express-serve-static-core";
+import { CookieOptions, Request, Response } from "express";
+import { LoginRequestBody, RefreshTokenRequestBody } from "~/rules/requests/user.request";
+import userService from "~/services/user.service";
+import { HTTP_STATUS } from "~/constants/httpStatus";
+import { ResponseClient } from "~/rules/response";
+import { ExpiresInTokenType } from "~/constants/enums";
+
+export const login = async (
+    req: Request<ParamsDictionary, any, LoginRequestBody>,
+    res: Response,
+    next: NextFunction,
+) => {
+    try {
+        const result = await userService.login(req.body);
+        setCookieResponse(res, "access_token", result.access_token, ExpiresInTokenType.AccessToken);
+        setCookieResponse(res, "refresh_token", result.refresh_token, ExpiresInTokenType.RefreshToken);
+        return res.status(HTTP_STATUS.OK).json(
+            new ResponseClient({
+                message: "Đăng nhập thành công!",
+            }),
+        );
+    } catch (error) {
+        return next(error);
+    }
+};
+
+export const refreshToken = async (
+    req: Request<ParamsDictionary, any, RefreshTokenRequestBody>,
+    res: Response,
+    next: NextFunction,
+) => {
+    const token = req.cookies.refresh_token ?? "";
+    const userId = req.userId as string;
+    try {
+        const result = await userService.refreshToken(userId, token);
+        setCookieResponse(res, "access_token", result.access_token, ExpiresInTokenType.AccessToken);
+        setCookieResponse(res, "refresh_token", result.refresh_token, ExpiresInTokenType.RefreshToken);
+        return res.status(HTTP_STATUS.OK).json(new ResponseClient({ message: "Làm mới token thành công!" }));
+    } catch (error) {
+        return next(error);
+    }
+};
+
+const setCookieResponse = (res: Response, name: string, token: string, expiresIn: number) => {
+    const cookieOptions: CookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        expires: new Date(Date.now() + expiresIn * 1000),
+    };
+    res.cookie(name, token, cookieOptions);
+};

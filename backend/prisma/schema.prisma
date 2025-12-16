@@ -1,0 +1,160 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  email       String   @unique @db.VarChar(255)
+  password    String   @db.VarChar(60)
+  fullName    String   @map("full_name") @db.VarChar(255)
+  role        Role
+  candidateId String?  @unique @map("candidate_id") @db.VarChar(36)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  candidate   Candidate?   @relation("UserToCandidate", fields: [candidateId], references: [id])
+  mentorships Mentorship[] @relation("MentorToMentorship")
+  submissions Submission[]
+  hostedRooms Room[]       @relation("HostToRoom")
+  judgeRooms  JudgeRoom[]
+  reports     Report[]
+
+  @@map("users")
+}
+
+model Candidate {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  studentCode String   @unique @map("student_code") @db.VarChar(10)
+  phone       String   @db.VarChar(12)
+  major       String   @db.VarChar(50)
+  semester    String   @db.VarChar(255)
+  teamId      String?  @map("team_id") @db.VarChar(36)
+  mentorNote  String?  @map("mentor_note") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user    User? @relation("UserToCandidate")
+  team    Team? @relation("CandidateToTeam", fields: [teamId], references: [id], onDelete: SetNull)
+  ledTeam Team? @relation("TeamLeader")
+
+  @@map("candidates")
+}
+
+model Team {
+  id           String  @id @default(uuid()) @db.VarChar(36)
+  mentorshipId String  @map("mentorship_id") @db.VarChar(36)
+  leaderId     String? @unique @map("leader_id") @db.VarChar(36)
+  topicId      String  @map("topic_id") @db.VarChar(36)
+  mentorNote   String? @map("mentor_note") @db.Text
+
+  mentorship  Mentorship   @relation("MentorshipToTeam", fields: [mentorshipId], references: [id])
+  leader      Candidate?   @relation("TeamLeader", fields: [leaderId], references: [id])
+  topic       Topic        @relation(fields: [topicId], references: [id])
+  candidates  Candidate[]  @relation("CandidateToTeam")
+  submissions Submission[]
+  reports     Report[]
+
+  @@map("teams")
+}
+
+model Mentorship {
+  id       String @id @default(uuid()) @db.VarChar(36)
+  mentorId String @map("mentor_id") @db.VarChar(36)
+
+  mentor User   @relation("MentorToMentorship", fields: [mentorId], references: [id])
+  teams  Team[] @relation("MentorshipToTeam")
+
+  @@map("mentorship")
+}
+
+model Topic {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  title     String   @db.VarChar(255)
+  filePath  String   @map("file_path") @db.VarChar(255)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  teams Team[]
+
+  @@map("topics")
+}
+
+model Submission {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  teamId      String   @map("team_id") @db.VarChar(36)
+  userId      String   @map("user_id") @db.VarChar(36)
+  filePath    String   @map("file_path") @db.VarChar(255)
+  submittedAt DateTime @map("submitted_at")
+
+  team Team @relation(fields: [teamId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("submissions")
+}
+
+model Room {
+  id         String     @id @default(uuid()) @db.VarChar(36)
+  roomNumber String     @map("room_number") @db.VarChar(5)
+  startTime  DateTime   @map("start_time")
+  endTime    DateTime?  @map("end_time")
+  hostId     String     @map("host_id") @db.VarChar(36)
+  status     RoomStatus
+
+  host       User        @relation("HostToRoom", fields: [hostId], references: [id])
+  judgeRooms JudgeRoom[]
+
+  @@map("rooms")
+}
+
+model JudgeRoom {
+  id      String @id @default(uuid()) @db.VarChar(36)
+  judgeId String @map("judge_id") @db.VarChar(36)
+  roomId  String @map("room_id") @db.VarChar(36)
+
+  judge User @relation(fields: [judgeId], references: [id])
+  room  Room @relation(fields: [roomId], references: [id])
+
+  @@map("judge_rooms")
+}
+
+model Report {
+  id            String   @id @default(uuid()) @db.VarChar(36)
+  mentorId      String   @map("mentor_id") @db.VarChar(36)
+  teamId        String   @map("team_id") @db.VarChar(36)
+  reportContent String   @map("report_content") @db.Text
+  reportedAt    DateTime @map("reported_at")
+
+  mentor User @relation(fields: [mentorId], references: [id])
+  team   Team @relation(fields: [teamId], references: [id])
+
+  @@map("reports")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.VarChar(36)
+  title     String   @db.VarChar(255)
+  message   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("notifications")
+}
+
+enum Role {
+  CANDIDATE
+  HOST
+  MENTOR
+  JUDGE
+  ADMIN
+}
+
+enum RoomStatus {
+  AVAILABLE
+  IN_USE
+  COMPLETED
+}
