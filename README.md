@@ -2,13 +2,12 @@
 
 ## Overview
 
-Dự án được xây dựng phục vụ kỳ tuyển quân khóa F21 của CLB F-Code. Hệ thống bao gồm backend (Node.js/Prisma) và frontend (React/Next.js). Toàn bộ hạ tầng phụ trợ được quản lý qua Docker.
+Dự án được xây dựng phục vụ kỳ tuyển quân khóa F21 của CLB F-Code.
 
 ## Project Structure
 
 - /backend: API Service và Database Schema.
 - /frontend: Giao diện người dùng.
-- /root: Cấu hình môi trường phát triển chung (Prettier, Docker Compose).
 
 ## Prerequisites
 
